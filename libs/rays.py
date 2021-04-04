@@ -13,7 +13,7 @@ class Rays:
 
         self.pos = (directions + origin).to(dev)
         self.vel = u.unit_vector(directions.float()).to(dev)
-        self.depth = torch.zeros((self.n_rays(), 1))
+        self.depth = torch.zeros((self.n_rays(), 1)).to(dev)
 
     def n_rays(self):
         return self.pos.shape[0]

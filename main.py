@@ -35,5 +35,5 @@ if __name__ == '__main__':
     with torch.no_grad():
         image = cam.render(world, 5000, 0.02, antialiasing=config['antialiasing'])
 
-    image.show(flip=True)
-    # image.save('output/test_1.png', flip=True)
+    # image.show(flip=True)
+    image.save('test_1.png', flip=True)

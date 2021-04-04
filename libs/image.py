@@ -36,7 +36,8 @@ class Image:
         plt.imshow(data_show)
 
     def save(self, output_path, flip=False):
-        data_save = self.flipud() if flip else self.data
+        data_save = self.flipud() if flip else self.data.detach().clone()
+        data_save = torch.clip(data_save, 0, 1)
 
         if self.channels_first:
             data_save = rearrange(data_save, 'c h w -> h w c')
@@ -45,15 +46,15 @@ class Image:
 
     def flipud(self):
         if self.channels_first:
-            data = torch.flip(self.data, [1])
+            data = torch.flip(self.data.detach().clone(), [1])
         else:
-            data = torch.flip(self.data, [0])
+            data = torch.flip(self.data.detach().clone(), [0])
         return data
 
     def fliplr(self):
         if self.channels_first:
-            data = torch.flip(self.data, [2])
+            data = torch.flip(self.data.detach().clone(), [2])
         else:
-            data = torch.flip(self.data, [1])
+            data = torch.flip(self.data.detach().clone(), [1])
         return data
 
