@@ -1,5 +1,6 @@
 import torch
 
+
 class World:
     def __init__(self):
         self.objects = []
@@ -10,8 +11,8 @@ class World:
     def clear(self):
         self.objects = []
 
-    def hit(self, r_in, t_min, t_max):
-        intersections = [obj.intersect(r_in, t_min, t_max) for obj in self.objects] # hit should return t
-        nearest = torch.min(torch.stack(intersections, dim=0), dim=0).values
+    def hit(self, r_in):
+        distances = [obj.intersect(r_in) for obj in self.objects]  # hit should return the distance to the object
+        nearest = torch.min(torch.stack(distances, dim=0), dim=0).values
 
-        return intersections, nearest
+        return distances, nearest

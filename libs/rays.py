@@ -1,6 +1,6 @@
 import torch
 from libs.utils import dev, FARAWAY
-from einops import repeat
+from einops import repeat, rearrange
 import libs.utils as u
 
 

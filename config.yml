@@ -1,6 +1,8 @@
-image_width: 1024
-aspect_ratio: 16/9
-antialiasing: 2
+image_width: 100
+aspect_ratio: 1
+antialiasing: 1
 fov: 90
 space: schwarzschild
 #space: straight
+steps: 5000
+timestep: 0.1
