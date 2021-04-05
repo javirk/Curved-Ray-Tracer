@@ -12,28 +12,23 @@ if __name__ == '__main__':
 
     config = read_config('config.yml')
 
-    material_ground = Material('lambertian', torch.tensor((224, 90, 90), device=dev))
-    material_center = Material('lambertian', torch.tensor((0.1, 0.2, 0.5), device=dev))
-    # material_left = Material('lambertian', torch.tensor((224, 90, 90), device=dev))
-    # material_right = Material('metal', torch.tensor((250, 248, 202), device=dev))
+    material_back_sphere = Material('lambertian', torch.tensor((236, 64, 52), device=dev))
+    material_front_sphere = Material('lambertian', torch.tensor((52, 161, 235), device=dev))
 
     # World
     world = World()
-    # world.add(Sphere(torch.tensor((0.0, -100., 0)), 100., material_ground))
-    world.add(Sphere(torch.tensor((0.0, 0, 0.)), 1, material_center))
-    world.add(Sphere(torch.tensor((0.0, 0, 3.)), 1, material_ground))
-    # world.add(Sphere(torch.tensor((-0.25, 0.5, 1.5)), 0.5, material_left))
-    # world.add(Sphere(torch.tensor((-0.5, 0.5, -1.5)), 0.5, material_right))
+    world.add(Sphere(torch.tensor((0.0, 0, 6.)), 2, material_back_sphere)) # Back sphere
+    world.add(Sphere(torch.tensor((0.0, 0, 0.)), 2, material_front_sphere)) # Front sphere
 
-    lookfrom = torch.tensor((0, 0., -3.))
+    lookfrom = torch.tensor((2, 2., -6.))
     lookat = torch.tensor((0., 0., 0.))
     vup = torch.tensor((0., 1., 0.))
 
     cam = Camera(lookfrom, lookat, vup, config['fov'], config['image_width'], config['aspect_ratio'],
-                 config['space'])
+                 config['space'], config['steps'], config['timestep'])
 
     with torch.no_grad():
-        image = cam.render(world, 5000, 0.02, antialiasing=config['antialiasing'])
+        image, d = cam.render(world, antialiasing=config['antialiasing'])
 
     # image.show(flip=True)
     image.save('test_1.png', flip=True)
