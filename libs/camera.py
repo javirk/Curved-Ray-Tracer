@@ -52,8 +52,8 @@ class Camera:
             ray = Rays(origin=self.origin,
                        directions=self.lower_left_corner + x * self.horizontal + y * self.vertical - self.origin)
 
-            color = torch.zeros(ray.pos.size(), device=u.dev)
-            self.timestep_init(ray.depth.size())
+            color = torch.ones(ray.pos.size(), device=u.dev) * 0.05
+            self.timestep_init((self.image_width * self.image_height, 1))
 
             for t in tqdm(range(self.steps)):
                 ray, color = self.step(ray, world, color)
@@ -62,7 +62,7 @@ class Camera:
 
         scale = 1 / antialiasing
         colors = torch.sqrt(scale * total_colors)
-        return Image.from_flat(colors, self.image_width, self.image_height), ray.depth
+        return Image.from_flat(colors, self.image_width, self.image_height)
 
     def step(self, r, world, color):
         r.pos, r.vel = u.runge_kutta(r.pos, r.vel, self.f, self.dt_matrix)
@@ -70,8 +70,8 @@ class Camera:
         distances, nearest_distance = world.hit(r)
 
         for i, obj in enumerate(world.objects):
-            r, color_obj, intersections = obj.hit(r, distances[i], color)
-            color = torch.where(intersections, color_obj, color)
+            r, color_obj, intersections = obj.hit(r, distances[i], color, world)
+            color = torch.where(intersections, color_obj + color, color)
 
         self.dt_matrix = u.update_timestep(nearest_distance)
         return r, color

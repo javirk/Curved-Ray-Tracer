@@ -132,7 +132,7 @@ def f_schwarzschild(r, v):
 def f_straight(r, v):
     return 0
 
-def update_timestep(distances, mindis=1.5, maxdis=2, mindt=0.0001, maxdt=1):
+def update_timestep(distances, mindis=1.5, maxdis=3, mindt=0.0001, maxdt=1):
     dt = (maxdt - mindt) / (maxdis - mindis) * distances + mindt * maxdis - maxdt * mindis
     dt = torch.clamp(dt, mindt, maxdt)
     return dt

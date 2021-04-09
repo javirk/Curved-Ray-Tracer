@@ -19,8 +19,9 @@ if __name__ == '__main__':
     world = World()
     world.add(Sphere(torch.tensor((0.0, 0, 6.)), 2, material_back_sphere)) # Back sphere
     world.add(Sphere(torch.tensor((0.0, 0, 0.)), 2, material_front_sphere)) # Front sphere
+    world.add_light(torch.tensor((0., 0, -6.), device=dev))
 
-    lookfrom = torch.tensor((2, 2., -6.))
+    lookfrom = torch.tensor((0, 0., -6.))
     lookat = torch.tensor((0., 0., 0.))
     vup = torch.tensor((0., 1., 0.))
 
@@ -28,7 +29,7 @@ if __name__ == '__main__':
                  config['space'], config['steps'], config['timestep'])
 
     with torch.no_grad():
-        image, d = cam.render(world, antialiasing=config['antialiasing'])
+        image = cam.render(world, antialiasing=config['antialiasing'])
 
     # image.show(flip=True)
     image.save('test_1.png', flip=True)

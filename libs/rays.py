@@ -12,8 +12,13 @@ class Rays:
             self.origin = origin
 
         self.pos = (directions + origin).to(dev)
-        self.vel = u.unit_vector(directions.float()).to(dev)
-        self.depth = torch.zeros((self.n_rays(), 1)).to(dev)
+        self.vel = u.unit_vector(directions.float(), dim=1).to(dev)
+        # self.depth = torch.zeros((self.n_rays(), 1)).to(dev)
+
+    @classmethod
+    def from_shadow(cls, o, d):
+        r = cls(o - d, d)
+        return r
 
     def n_rays(self):
         return self.pos.shape[0]
@@ -33,5 +38,5 @@ class Rays:
     def update(self, cond, pos, vel):
         self.pos = torch.where(cond, pos, self.pos)
         self.vel = torch.where(cond, vel, self.vel)
-        depth_1 = self.depth + 1
-        self.depth = torch.where(cond, depth_1, self.depth)
+        # depth_1 = self.depth + 1
+        # self.depth = torch.where(cond, depth_1, self.depth)
