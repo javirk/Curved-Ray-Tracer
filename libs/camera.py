@@ -11,6 +11,7 @@ class Camera:
     def __init__(self, config, device='cpu', lookfrom=None):
         if lookfrom is None:
             lookfrom = torch.tensor(eval(config['lookfrom']))
+        lookfrom = lookfrom.float()
         lookat = torch.tensor(eval(config['lookat']))
         vup = torch.tensor(eval(config['upvector']))
 

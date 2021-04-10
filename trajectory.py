@@ -36,7 +36,7 @@ if __name__ == '__main__':
             if (lookfrom == prev_poses).all(1).any():
                 continue
         lookfrom.to(dev)
-        cam = Camera(config, dev)
+        cam = Camera(config, lookfrom=lookfrom, device=dev)
 
         with torch.no_grad():
             image = cam.render(world)
