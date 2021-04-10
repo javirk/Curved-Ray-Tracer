@@ -12,6 +12,8 @@ if __name__ == '__main__':
 
     config = read_config('config.yml')
 
+    light_pos = eval(config['light_pos'])
+
     material_back_sphere = Material('lambertian', torch.tensor((236, 64, 52), device=dev))
     material_front_sphere = Material('lambertian', torch.tensor((52, 161, 235), device=dev))
 
@@ -19,9 +21,9 @@ if __name__ == '__main__':
     world = World()
     world.add(Sphere(torch.tensor((0.0, 0, 6.)), 2, material_back_sphere)) # Back sphere
     world.add(Sphere(torch.tensor((0.0, 0, 0.)), 2, material_front_sphere)) # Front sphere
-    world.add_light(torch.tensor((0., 0, -6.), device=dev))
+    world.add_light(torch.tensor(light_pos, device=dev))
 
-    lookfrom = torch.tensor((0, 0., -6.))
+    lookfrom = torch.tensor(eval(config['lookfrom']))
     lookat = torch.tensor((0., 0., 0.))
     vup = torch.tensor((0., 1., 0.))
 

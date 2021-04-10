@@ -8,3 +8,5 @@ steps: 50000
 timestep: 0.1
 evolution_method: verlet
 background_color: 0.0
+light_pos: 0., 0., -6
+lookfrom: 0., 0., -6.
