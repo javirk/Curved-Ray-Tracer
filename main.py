@@ -25,8 +25,9 @@ if __name__ == '__main__':
     lookat = torch.tensor((0., 0., 0.))
     vup = torch.tensor((0., 1., 0.))
 
+    # TODO: This is the most horrible thing I have ever seen
     cam = Camera(lookfrom, lookat, vup, config['fov'], config['image_width'], config['aspect_ratio'],
-                 config['space'], config['steps'], config['timestep'])
+                 config['space'], config['steps'], config['timestep'], config['background_color'])
 
     with torch.no_grad():
         image = cam.render(world, antialiasing=config['antialiasing'], method=config['evolution_method'])

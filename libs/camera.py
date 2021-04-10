@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 
 class Camera:
-    def __init__(self, lookfrom, lookat, vup, vfov, image_width, aspect_ratio, space, steps, timestep):
+    def __init__(self, lookfrom, lookat, vup, vfov, image_width, aspect_ratio, space, steps, timestep, background_color):
         aspect_ratio = u.convert_to_float(aspect_ratio)
         theta = u.degrees_to_radians(vfov)
         h = tan(theta / 2)
@@ -33,6 +33,7 @@ class Camera:
         self.dt_matrix = None
 
         self.f = u.f_schwarzschild if space == 'schwarzschild' else u.f_straight
+        self.background_color = background_color
 
     def timestep_init(self, size):
         self.dt_matrix = torch.full(size, self.timestep, device=u.dev)
@@ -53,7 +54,7 @@ class Camera:
             ray = Rays(origin=self.origin,
                        directions=self.lower_left_corner + x * self.horizontal + y * self.vertical - self.origin)
 
-            color = torch.ones(ray.pos.size(), device=u.dev) * 0.05
+            color = torch.full(ray.pos.size(), self.background_color, device=u.dev)
             self.timestep_init((self.image_width * self.image_height, 1))
 
             for t in tqdm(range(self.steps)):
