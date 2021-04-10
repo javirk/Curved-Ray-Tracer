@@ -37,7 +37,8 @@ class Camera:
     def timestep_init(self, size):
         self.dt_matrix = torch.full(size, self.timestep, device=u.dev)
 
-    def render(self, world, antialiasing=1):
+    def render(self, world, antialiasing=1, method='runge_kutta'):
+        evolution = u.verlet if method == 'verlet' else u.runge_kutta
         total_colors = torch.zeros((self.image_width * self.image_height, 3), device=u.dev)
         for _ in range(antialiasing):
             x = torch.tile(torch.linspace(0, (self.out_shape[1] - 1) / self.out_shape[1], self.out_shape[1]),
@@ -56,7 +57,7 @@ class Camera:
             self.timestep_init((self.image_width * self.image_height, 1))
 
             for t in tqdm(range(self.steps)):
-                ray, color = self.step(ray, world, color)
+                ray, color = self.step(ray, world, color, evolution)
 
             total_colors += color
 
@@ -64,8 +65,8 @@ class Camera:
         colors = torch.sqrt(scale * total_colors)
         return Image.from_flat(colors, self.image_width, self.image_height)
 
-    def step(self, r, world, color):
-        r.pos, r.vel = u.runge_kutta(r.pos, r.vel, self.f, self.dt_matrix)
+    def step(self, r, world, color, evolution):
+        r.pos, r.vel = evolution(r.pos, r.vel, self.f, self.dt_matrix)
 
         distances, nearest_distance = world.hit(r)
 

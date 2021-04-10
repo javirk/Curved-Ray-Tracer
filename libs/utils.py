@@ -122,6 +122,12 @@ def runge_kutta(r, v, f, dt=0.1):
 
     return r1, v1
 
+def verlet(r, v, f, dt=0.1):
+    v05 = v + 0.5 * f(r, v) * dt
+    r1 = r + v05 * dt
+    v1 = v05 + 0.5 * f(r1, v) * dt / 2
+    return r1, v1
+
 
 def f_schwarzschild(r, v):
     c = torch.cross(r, v)

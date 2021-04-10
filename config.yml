@@ -6,3 +6,4 @@ space: schwarzschild
 #space: straight
 steps: 50000
 timestep: 0.1
+evolution_method: verlet

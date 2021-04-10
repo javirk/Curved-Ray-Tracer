@@ -29,7 +29,7 @@ if __name__ == '__main__':
                  config['space'], config['steps'], config['timestep'])
 
     with torch.no_grad():
-        image = cam.render(world, antialiasing=config['antialiasing'])
+        image = cam.render(world, antialiasing=config['antialiasing'], method=config['evolution_method'])
 
     # image.show(flip=True)
     image.save('test_1.png', flip=True)
