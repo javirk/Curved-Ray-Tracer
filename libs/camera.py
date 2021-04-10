@@ -8,8 +8,9 @@ from tqdm import tqdm
 
 
 class Camera:
-    def __init__(self, config, device):
-        lookfrom = torch.tensor(eval(config['lookfrom']))
+    def __init__(self, config, device='cpu', lookfrom=None):
+        if lookfrom is None:
+            lookfrom = torch.tensor(eval(config['lookfrom']))
         lookat = torch.tensor(eval(config['lookat']))
         vup = torch.tensor(eval(config['upvector']))
 

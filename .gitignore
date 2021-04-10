@@ -1,0 +1,5 @@
+.idea/*
+runs/*
+Jupyter/*
+*.png
+test.py

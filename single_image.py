@@ -13,8 +13,8 @@ if __name__ == '__main__':
 
     light_pos = eval(config['light_pos'])
 
-    material_back_sphere = Material('lambertian', torch.tensor((236, 64, 52), device=dev))
-    material_front_sphere = Material('lambertian', torch.tensor((52, 161, 235), device=dev))
+    material_back_sphere = Material('lambertian', torch.tensor((230, 26, 11), device=dev))
+    material_front_sphere = Material('lambertian', torch.tensor((31, 146, 224), device=dev))
 
     # World
     world = World(dev)

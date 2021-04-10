@@ -3,9 +3,12 @@ from math import pi
 from einops import rearrange
 import yaml
 import matplotlib.pyplot as plt
+import numpy as np
+import os
+import shutil
+import json
 
 FARAWAY = 1.0e3
-# dev = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 
 def dot(a, b):
@@ -27,6 +30,10 @@ def unit_vector(a, dim=None):
 
 
 def degrees_to_radians(d):
+    if type(d) == str:
+        d = eval(d)
+    if type(d) == list or type(d) == tuple:
+        return [x * pi / 180. for x in d]
     return d * pi / 180.
 
 
@@ -123,6 +130,7 @@ def runge_kutta(r, v, f, dt=0.1):
 
     return r1, v1
 
+
 def verlet(r, v, f, dt=0.1):
     v05 = v + 0.5 * f(r, v) * dt
     r1 = r + v05 * dt
@@ -139,7 +147,68 @@ def f_schwarzschild(r, v):
 def f_straight(r, v):
     return 0
 
+
 def update_timestep(distances, mindis=1.5, maxdis=3, mindt=0.0001, maxdt=1):
     dt = (maxdt - mindt) / (maxdis - mindis) * distances + mindt * maxdis - maxdt * mindis
     dt = torch.clamp(dt, mindt, maxdt)
     return dt
+
+
+def get_cam_trajectory(config):
+    n_points = config['total_points']
+    assert np.sqrt(n_points) == int(np.sqrt(n_points)), 'Number of points must be a square number'
+    points_per_line = complex(0, np.sqrt(n_points))
+    initial_theta, final_theta = degrees_to_radians(config['theta'])
+    initial_phi, final_phi = degrees_to_radians(config['phi'])
+
+    phi, theta = np.mgrid[initial_theta:final_theta:points_per_line,
+                 initial_phi:final_phi:points_per_line]
+
+    x = config['r'] * np.sin(phi) * np.cos(theta)
+    y = config['r'] * np.cos(phi)
+    z = - config['r'] * np.sin(phi) * np.sin(theta)
+
+    x = x.flatten()
+    y = y.flatten()
+    z = z.flatten()
+
+    return x, y, z
+
+
+def prepare_dirs(f):
+    os.makedirs(f, exist_ok=True)
+    os.makedirs(f + '/imgs', exist_ok=True)
+    json_dir = f + '/poses.json'
+    if not os.path.exists(json_dir):
+        data = {'frames': []}
+        with open(json_dir, "w") as file:
+            json.dump(data, file)
+    return json_dir
+
+
+def copy_file(src, dst):
+    shutil.copy(src, dst)
+
+
+def read_previous_json(src):
+    try:
+        with open(src, "r") as read_file:
+            data = json.load(read_file)
+    except FileNotFoundError:
+        data = None
+    return data
+
+def get_previous_poses(data):
+    if len(data['frames']) == 0:
+        return None
+    p = []
+    for f in data['frames']:
+        p.append(f['cam_pos'])
+    return torch.tensor(p)
+
+def update_json(src, update_data):
+    with open(src, "r") as file:
+        data = json.load(file)
+    data['frames'].append(update_data)
+    with open(src, "w") as file:
+        json.dump(data, file)

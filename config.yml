@@ -1,10 +1,12 @@
 # Trajectories
 theta: 45, 90 # initial_theta, final_theta
-phi: 0, 180
-total_points: 100
+phi: 45, 135
+total_points: 4
+r: 6
+run_folder: runs/test1/
 
 # Camera
-image_width: 100
+image_width: 16
 aspect_ratio: 1
 fov: 90
 space: schwarzschild
@@ -16,10 +18,10 @@ upvector: 0., 1., 0.
 # Rendering
 antialiasing: 1
 evolution_method: verlet
-steps: 50000 # 50000 works
+steps: 10000 # 50000 works
 initial_timestep: 0.1
 background_color: 0.0
-debug: False
+debug: True
 
 # Scene
 light_pos: 0., 0., -6
