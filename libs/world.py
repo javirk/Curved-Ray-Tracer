@@ -3,10 +3,10 @@ import libs.utils as u
 
 
 class World:
-    def __init__(self):
+    def __init__(self, device='cpu'):
         self.objects = []
         self.light = None
-        self.t_max = torch.tensor(1.e5, device=u.dev)
+        self.t_max = torch.tensor(1.e5, device=device)
 
     def add(self, o):
         self.objects.append(o)

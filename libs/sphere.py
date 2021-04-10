@@ -1,12 +1,12 @@
 import torch
 import libs.utils as u
-from libs.utils import dev
+# from libs.utils import dev
 from libs.rays import Rays
 
 
 class Sphere:
-    def __init__(self, center, radius, material):
-        self.center = center.to(dev)
+    def __init__(self, center, radius, material, device):
+        self.center = center.to(device)
         self.radius = radius
         self.material = material
 
@@ -18,7 +18,7 @@ class Sphere:
             scattered_pos, scattered_vel = self.material.scatter(r, outward_normal)
             r.update(intersections, scattered_pos, scattered_vel)
 
-            r_shadow = Rays.from_shadow(r.pos, world.light - r.pos)
+            r_shadow = Rays.from_shadow(r.pos, world.light - r.pos, r.dev)
             distances, nearest_distance = world.hit_shadows(r_shadow)
             see_light = distances[world.objects.index(self)] == nearest_distance
             # There is something wrong in the lv

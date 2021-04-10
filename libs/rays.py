@@ -1,23 +1,23 @@
 import torch
-from libs.utils import dev, FARAWAY
+from libs.utils import FARAWAY
 from einops import repeat, rearrange
 import libs.utils as u
 
 
 class Rays:
-    def __init__(self, origin, directions):
+    def __init__(self, origin, directions, device):
         if len(origin) == 1:
             self.origin = repeat(origin, 'c -> copy c', copy=directions.shape[0])
         else:
             self.origin = origin
 
-        self.pos = (directions + origin).to(dev)
-        self.vel = u.unit_vector(directions.float(), dim=1).to(dev)
-        # self.depth = torch.zeros((self.n_rays(), 1)).to(dev)
+        self.pos = (directions + origin).to(device)
+        self.vel = u.unit_vector(directions.float(), dim=1).to(device)
+        self.dev = device
 
     @classmethod
-    def from_shadow(cls, o, d):
-        r = cls(o - d, d)
+    def from_shadow(cls, o, d, device='cpu'):
+        r = cls(o - d, d, device)
         return r
 
     def n_rays(self):
@@ -38,5 +38,3 @@ class Rays:
     def update(self, cond, pos, vel):
         self.pos = torch.where(cond, pos, self.pos)
         self.vel = torch.where(cond, vel, self.vel)
-        # depth_1 = self.depth + 1
-        # self.depth = torch.where(cond, depth_1, self.depth)

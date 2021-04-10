@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 
 class Camera:
-    def __init__(self, config):
+    def __init__(self, config, device):
         lookfrom = torch.tensor(eval(config['lookfrom']))
         lookat = torch.tensor(eval(config['lookat']))
         vup = torch.tensor(eval(config['upvector']))
@@ -41,12 +41,14 @@ class Camera:
         self.antialiasing = config['antialiasing']
         self.evolution = u.verlet if config['evolution_method'] == 'verlet' else u.runge_kutta
         self.debug = config['debug']
+        
+        self.device = device
 
     def timestep_init(self, size):
-        self.dt_matrix = torch.full(size, self.timestep, device=u.dev)
+        self.dt_matrix = torch.full(size, self.timestep, device=self.device)
 
     def render(self, world):
-        total_colors = torch.zeros((self.image_width * self.image_height, 3), device=u.dev)
+        total_colors = torch.zeros((self.image_width * self.image_height, 3), device=self.device)
         for _ in range(self.antialiasing):
             x = torch.tile(torch.linspace(0, (self.out_shape[1] - 1) / self.out_shape[1], self.out_shape[1]),
                            (self.out_shape[0],)).unsqueeze(1)
@@ -58,9 +60,10 @@ class Camera:
             y += torch.rand(y.shape) / self.out_shape[0]
 
             ray = Rays(origin=self.origin,
-                       directions=self.lower_left_corner + x * self.horizontal + y * self.vertical - self.origin)
+                       directions=self.lower_left_corner + x * self.horizontal + y * self.vertical - self.origin,
+                       device=self.device)
 
-            color = torch.full(ray.pos.size(), self.background_color, device=u.dev)
+            color = torch.full(ray.pos.size(), self.background_color, device=self.device)
             self.timestep_init((self.image_width * self.image_height, 1))
 
             for _ in tqdm(range(self.steps), disable=not self.debug):

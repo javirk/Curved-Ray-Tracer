@@ -17,12 +17,12 @@ if __name__ == '__main__':
     material_front_sphere = Material('lambertian', torch.tensor((52, 161, 235), device=dev))
 
     # World
-    world = World()
-    world.add(Sphere(torch.tensor((0.0, 0, 6.)), 2, material_back_sphere)) # Back sphere
-    world.add(Sphere(torch.tensor((0.0, 0, 0.)), 2, material_front_sphere)) # Front sphere
+    world = World(dev)
+    world.add(Sphere(torch.tensor((0.0, 0, 6.)), 2, material_back_sphere, device=dev)) # Back sphere
+    world.add(Sphere(torch.tensor((0.0, 0, 0.)), 2, material_front_sphere, device=dev)) # Front sphere
     world.add_light(torch.tensor(light_pos, device=dev))
 
-    cam = Camera(config)
+    cam = Camera(config, dev)
 
     with torch.no_grad():
         image = cam.render(world)

@@ -1,3 +1,8 @@
+# Trajectories
+theta: 45, 90 # initial_theta, final_theta
+phi: 0, 180
+total_points: 100
+
 # Camera
 image_width: 100
 aspect_ratio: 1

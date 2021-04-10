@@ -5,7 +5,7 @@ import yaml
 import matplotlib.pyplot as plt
 
 FARAWAY = 1.0e3
-dev = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+# dev = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 
 def dot(a, b):
@@ -37,36 +37,37 @@ def repeat_value_tensor(val, reps, device='cpu'):
         return torch.tile(val, reps)
 
 
-def random_in_range(a, b, size):
+def random_in_range(a, b, size, device='cpu'):
     '''
     Random float tensor in range [a, b)
     :param a: minimum value
     :param b: maximum value
     :param size: size of the tensor
+    :param device:
     :return: tensor
     '''
-    return (a - b) * torch.rand(size, device=dev) + b
+    return (a - b) * torch.rand(size, device=device) + b
 
 
-def random_on_unit_sphere(size):
+def random_on_unit_sphere(size, device='cpu'):
     # We use the method in https://stats.stackexchange.com/questions/7977/how-to-generate-uniformly-distributed-points-on-the-surface-of-the-3-d-unit-sphe
     # to produce vectors on the surface of a unit sphere
 
     x = torch.randn(size)
     l = torch.sqrt(torch.sum(torch.pow(x, 2), dim=-1)).unsqueeze(1)
-    x = (x / l).to(dev)
+    x = (x / l).to(device)
 
     return x
 
 
-def unit_sphere(size):
+def unit_sphere(size, device='cpu'):
     v = torch.randn(size)
     v = v / v.norm(2, dim=-1, keepdim=True)
-    return v.to(dev)
+    return v.to(device)
 
 
-def random_on_unit_sphere_like(t):
-    return unit_sphere(t.shape)
+def random_on_unit_sphere_like(t, device='cpu'):
+    return unit_sphere(t.shape, device)
 
 
 def plot_t(t, width=400, height=225):
