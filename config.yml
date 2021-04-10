@@ -1,12 +1,21 @@
-image_width: 200
+# Camera
+image_width: 100
 aspect_ratio: 1
-antialiasing: 1
 fov: 90
 space: schwarzschild
-#space: straight
-steps: 50000
-timestep: 0.1
-evolution_method: verlet
-background_color: 0.0
-light_pos: 0., 0., -6
+aperture: 2. # It is not used yet
 lookfrom: 0., 0., -6.
+lookat: 0., 0., 0.
+upvector: 0., 1., 0.
+
+# Rendering
+antialiasing: 1
+evolution_method: verlet
+steps: 50000 # 50000 works
+initial_timestep: 0.1
+background_color: 0.0
+debug: False
+
+# Scene
+light_pos: 0., 0., -6
+

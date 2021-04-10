@@ -4,7 +4,6 @@ from libs.world import World
 from libs.camera import Camera
 from libs.material import Material
 from libs.utils import read_config
-import numpy as np
 import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
@@ -23,16 +22,10 @@ if __name__ == '__main__':
     world.add(Sphere(torch.tensor((0.0, 0, 0.)), 2, material_front_sphere)) # Front sphere
     world.add_light(torch.tensor(light_pos, device=dev))
 
-    lookfrom = torch.tensor(eval(config['lookfrom']))
-    lookat = torch.tensor((0., 0., 0.))
-    vup = torch.tensor((0., 1., 0.))
-
-    # TODO: This is the most horrible thing I have ever seen
-    cam = Camera(lookfrom, lookat, vup, config['fov'], config['image_width'], config['aspect_ratio'],
-                 config['space'], config['steps'], config['timestep'], config['background_color'])
+    cam = Camera(config)
 
     with torch.no_grad():
-        image = cam.render(world, antialiasing=config['antialiasing'], method=config['evolution_method'])
+        image = cam.render(world)
 
     # image.show(flip=True)
-    image.save('test_1.png', flip=True)
+    image.save('render.png', flip=True)
