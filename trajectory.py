@@ -5,7 +5,6 @@ from libs.camera import Camera
 from libs.material import Material
 from libs.utils import read_config
 import libs.utils as u
-import json
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -21,6 +20,10 @@ if __name__ == '__main__':
     dev = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
     config = read_config(config_path)
+    try:
+        eps = config['epsilon']
+    except KeyError:
+        eps = 1e-7
 
     prev_json_path = u.prepare_dirs(config['run_folder'])
     u.copy_file('config.yml', config['run_folder'])
@@ -45,8 +48,11 @@ if __name__ == '__main__':
     for n, (i, j, k) in enumerate(zip(x_traj, y_traj, z_traj)):
         lookfrom = torch.tensor((i, j, k))
         if prev_poses is not None:
-            if (lookfrom == prev_poses).all(1).any():
+            if ((lookfrom - prev_poses) < eps).all(1).any():
+                print(str(n) + ' is already done')
                 continue
+
+        print('Generating image ' + str(n))
         lookfrom.to(dev)
         cam = Camera(config, lookfrom=lookfrom, device=dev)
 
@@ -58,4 +64,3 @@ if __name__ == '__main__':
                         'cam_pos': list(lookfrom.detach().cpu().numpy())
                         }
         u.update_json(prev_json_path, results_dict)
-
