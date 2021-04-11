@@ -18,14 +18,13 @@ class Sphere:
             scattered_pos, scattered_vel = self.material.scatter(r, outward_normal)
             r.update(intersections, scattered_pos, scattered_vel)
 
-            r_shadow = Rays.from_shadow(r.pos, world.light - r.pos, r.dev)
-            distances, nearest_distance = world.hit_shadows(r_shadow)
-            see_light = distances[world.objects.index(self)] == nearest_distance
-            # There is something wrong in the lv
+            for light in world.lights:
+                r_shadow = Rays.from_shadow(r.pos, light - r.pos, r.dev)
+                distances, nearest_distance = world.hit_shadows(r_shadow)
+                see_light = distances[world.objects.index(self)] == nearest_distance
+                lv = torch.clamp(u.dot(outward_normal, r_shadow.vel), min=0)  # Taking the maximum
 
-            lv = torch.clamp(u.dot(outward_normal, r_shadow.vel), min=0) # Taking the maximum
-
-            color += self.material.albedo * see_light * lv
+                color += self.material.albedo * see_light * lv
 
         return r, color, intersections
 

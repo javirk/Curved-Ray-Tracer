@@ -5,7 +5,7 @@ import libs.utils as u
 class World:
     def __init__(self, device='cpu'):
         self.objects = []
-        self.light = None
+        self.lights = []
         self.t_max = torch.tensor(1.e5, device=device)
 
     def add(self, o):
@@ -15,7 +15,7 @@ class World:
         self.objects = []
 
     def add_light(self, l):
-        self.light = l
+        self.lights.append(l)
 
     def hit(self, r_in):
         distances = [obj.intersect(r_in) for obj in self.objects]  # hit should return the distance to the object

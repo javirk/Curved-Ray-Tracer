@@ -6,7 +6,7 @@ r: 6
 run_folder: runs/test1/
 
 # Camera
-image_width: 16
+image_width: 100
 aspect_ratio: 1
 fov: 90
 space: schwarzschild
@@ -18,11 +18,12 @@ upvector: 0., 1., 0.
 # Rendering
 antialiasing: 1
 evolution_method: verlet
-steps: 10000 # 50000 works
+steps: 50000 # 50000 works
 initial_timestep: 0.1
 background_color: 0.0
 debug: True
 
 # Scene
-light_pos: 0., 0., -6
+light1_pos: 0., 0., -6
+light2_pos: 4., 4., -4
 
