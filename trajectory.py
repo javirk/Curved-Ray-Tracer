@@ -17,7 +17,8 @@ if __name__ == '__main__':
     prev_json = u.read_previous_json(prev_json_path)
     prev_poses = u.get_previous_poses(prev_json)
 
-    light_pos = eval(config['light_pos'])
+    light1_pos = eval(config['light1_pos'])
+    light2_pos = eval(config['light2_pos'])
 
     material_back_sphere = Material('lambertian', torch.tensor((230, 26, 11), device=dev))
     material_front_sphere = Material('lambertian', torch.tensor((31, 146, 224), device=dev))
@@ -26,7 +27,8 @@ if __name__ == '__main__':
     world = World(dev)
     world.add(Sphere(torch.tensor((0.0, 0, 6.)), 2, material_back_sphere, device=dev))  # Back sphere
     world.add(Sphere(torch.tensor((0.0, 0, 0.)), 2, material_front_sphere, device=dev))  # Front sphere
-    world.add_light(torch.tensor(light_pos, device=dev))
+    world.add_light(torch.tensor(light1_pos, device=dev))
+    world.add_light(torch.tensor(light2_pos, device=dev))
 
     x_traj, y_traj, z_traj = u.get_cam_trajectory(config)
 
