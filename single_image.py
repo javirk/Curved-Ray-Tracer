@@ -5,11 +5,21 @@ from libs.camera import Camera
 from libs.material import Material
 from libs.utils import read_config
 import matplotlib.pyplot as plt
+import argparse
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-c', '--config-path',
+                    default='config.yml',
+                    type=str)
+
+FLAGS, unparsed = parser.parse_known_args()
+config_path = FLAGS.config_path
 
 if __name__ == '__main__':
     dev = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-    config = read_config('config.yml')
+    config = read_config(config_path)
 
     light1_pos = eval(config['light1_pos'])
     light2_pos = eval(config['light2_pos'])
@@ -19,8 +29,8 @@ if __name__ == '__main__':
 
     # World
     world = World(dev)
-    world.add(Sphere(torch.tensor((0.0, 0, 6.)), 2, material_back_sphere, device=dev)) # Back sphere
-    world.add(Sphere(torch.tensor((0.0, 0, 0.)), 2, material_front_sphere, device=dev)) # Front sphere
+    world.add(Sphere(torch.tensor((0.0, 0, 6.)), 2, material_back_sphere, device=dev))  # Back sphere
+    world.add(Sphere(torch.tensor((0.0, 0, 0.)), 2, material_front_sphere, device=dev))  # Front sphere
     world.add_light(torch.tensor(light1_pos, device=dev))
     world.add_light(torch.tensor(light2_pos, device=dev))
 

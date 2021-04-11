@@ -6,11 +6,21 @@ from libs.material import Material
 from libs.utils import read_config
 import libs.utils as u
 import json
+import argparse
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-c', '--config-path',
+                    default='config.yml',
+                    type=str)
+
+FLAGS, unparsed = parser.parse_known_args()
+config_path = FLAGS.config_path
 
 if __name__ == '__main__':
     dev = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-    config = read_config('config.yml')
+    config = read_config(config_path)
 
     prev_json_path = u.prepare_dirs(config['run_folder'])
     u.copy_file('config.yml', config['run_folder'])
