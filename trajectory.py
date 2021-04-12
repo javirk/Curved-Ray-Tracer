@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
     config = read_config(config_path)
     try:
-        eps = config['epsilon']
+        eps = eval(config['epsilon'])
     except KeyError:
         eps = 1e-5
 
