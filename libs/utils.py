@@ -187,7 +187,10 @@ def prepare_dirs(f):
 
 
 def copy_file(src, dst):
-    shutil.copy(src, dst)
+    try:
+        shutil.copy(src, dst)
+    except shutil.SameFileError:
+        pass
 
 
 def read_previous_json(src):
