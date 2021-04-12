@@ -26,7 +26,7 @@ if __name__ == '__main__':
         eps = 1e-5
 
     prev_json_path = u.prepare_dirs(config['run_folder'])
-    u.copy_file('config.yml', config['run_folder'])
+    u.copy_file(config_path, config['run_folder'])
     prev_json = u.read_previous_json(prev_json_path)
     prev_poses = u.get_previous_poses(prev_json)
 
