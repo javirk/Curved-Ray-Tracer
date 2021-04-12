@@ -48,7 +48,7 @@ if __name__ == '__main__':
     for n, (i, j, k) in enumerate(zip(x_traj, y_traj, z_traj)):
         lookfrom = torch.tensor((i, j, k))
         if prev_poses is not None:
-            if ((lookfrom - prev_poses) < eps).all(1).any():
+            if (torch.abs(lookfrom - prev_poses) < eps).all(1).any():
                 print(str(n) + ' is already done')
                 continue
 
