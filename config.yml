@@ -4,7 +4,7 @@ phi: 45, 135
 total_points: 4
 r: 6
 run_folder: runs/test1/
-epsilon: 1e-7
+epsilon: 1e-5
 
 # Camera
 image_width: 100

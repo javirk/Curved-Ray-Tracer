@@ -23,7 +23,7 @@ if __name__ == '__main__':
     try:
         eps = config['epsilon']
     except KeyError:
-        eps = 1e-7
+        eps = 1e-5
 
     prev_json_path = u.prepare_dirs(config['run_folder'])
     u.copy_file('config.yml', config['run_folder'])
