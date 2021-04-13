@@ -1,6 +1,7 @@
 import torch
 import matplotlib.pyplot as plt
 from einops import rearrange
+import numpy as np
 
 class Image:
     def __init__(self, data, channels_first=True):
@@ -45,7 +46,9 @@ class Image:
         if self.channels_first:
             data_save = rearrange(data_save, 'c h w -> h w c')
 
-        plt.imsave(output_path, data_save.cpu().numpy())
+        data_save = np.ascontiguousarray(data_save.cpu().numpy())
+
+        plt.imsave(output_path, data_save)
 
     def flipud(self):
         if self.channels_first:
