@@ -1,7 +1,7 @@
 # Trajectories
 theta: 45, 90 # initial_theta, final_theta
 phi: 45, 135
-total_points: 4
+total_points: 144
 r: 6
 run_folder: runs/test1/
 epsilon: 1e-5
