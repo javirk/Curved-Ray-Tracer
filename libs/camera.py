@@ -49,8 +49,9 @@ class Camera:
     def timestep_init(self, size):
         self.dt_matrix = torch.full(size, self.timestep, device=self.device)
 
-    def render(self, world):
+    def render(self, world, use_alpha=True):
         total_colors = torch.zeros((self.image_width * self.image_height, 3), device=self.device)
+        total_alpha = torch.zeros((self.image_width * self.image_height, 1), device=self.device)
         for _ in range(self.antialiasing):
             x = torch.tile(torch.linspace(0, (self.out_shape[1] - 1) / self.out_shape[1], self.out_shape[1]),
                            (self.out_shape[0],)).unsqueeze(1)
@@ -66,18 +67,21 @@ class Camera:
                        device=self.device)
 
             color = torch.full(ray.pos.size(), self.background_color, device=self.device)
+            alpha = torch.zeros((self.image_width * self.image_height, 1), device=self.device)
+
             self.timestep_init((self.image_width * self.image_height, 1))
 
             for _ in tqdm(range(self.steps), disable=not self.debug):
-                ray, color = self.step(ray, world, color)
+                ray, color, alpha = self.step(ray, world, color, alpha)
 
             total_colors += color
+            total_alpha = torch.logical_or(total_alpha, alpha)
 
         scale = 1 / self.antialiasing
-        colors = torch.sqrt(scale * total_colors)
-        return Image.from_flat(colors, self.image_width, self.image_height)
+        total_colors = torch.sqrt(scale * total_colors)
+        return Image.from_flat(total_colors, total_alpha, self.image_width, self.image_height, use_alpha=use_alpha)
 
-    def step(self, r, world, color):
+    def step(self, r, world, color, alpha):
         r.pos, r.vel = self.evolution(r.pos, r.vel, self.f, self.dt_matrix)
 
         distances, nearest_distance = world.hit(r)
@@ -85,6 +89,7 @@ class Camera:
         for i, obj in enumerate(world.objects):
             r, color_obj, intersections = obj.hit(r, distances[i], color, world)
             color = torch.where(intersections, color_obj + color, color)
+            alpha = torch.logical_or(intersections, alpha)
 
         self.dt_matrix = u.update_timestep(nearest_distance)
-        return r, color
+        return r, color, alpha

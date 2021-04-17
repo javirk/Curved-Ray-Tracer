@@ -7,7 +7,7 @@ run_folder: runs/test1/
 epsilon: 1e-5
 
 # Camera
-image_width: 100
+image_width: 9
 aspect_ratio: 1
 fov: 90
 space: schwarzschild

@@ -1,10 +1,11 @@
 import torch
 import matplotlib.pyplot as plt
 from einops import rearrange
+import numpy as np
 
 class Image:
     def __init__(self, data, channels_first=True):
-        assert len(data) == 3, 'Data has to be 3D to make an image'
+        assert len(data) == 3 or len(data) == 4, 'Data has to be 3D to make an image'
         self.data = data
         self.channels_first = channels_first
         self.height, self.width = self._get_width_height()
@@ -20,8 +21,11 @@ class Image:
         return height, width
 
     @classmethod
-    def from_flat(cls, data, width, height):
+    def from_flat(cls, data, alpha, width, height, use_alpha=True):
         data = rearrange(data, '(h w) c -> c h w', w=width, h=height)
+        if use_alpha:
+            alpha = rearrange(alpha, '(h w) c -> c h w', w=width, h=height)
+            data = torch.cat((data, alpha), dim=0)
         image = cls(data, channels_first=True)
         return image
 
@@ -42,7 +46,9 @@ class Image:
         if self.channels_first:
             data_save = rearrange(data_save, 'c h w -> h w c')
 
-        plt.imsave(output_path, data_save.cpu().numpy())
+        data_save = np.ascontiguousarray(data_save.cpu().numpy())
+
+        plt.imsave(output_path, data_save)
 
     def flipud(self):
         if self.channels_first:
