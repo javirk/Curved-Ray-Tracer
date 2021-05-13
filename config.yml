@@ -7,12 +7,12 @@ run_folder: runs/test1/
 epsilon: 1e-5
 
 # Camera
-image_width: 9
+image_width: 200
 aspect_ratio: 1
-fov: 90
-space: schwarzschild
+hfov: 39.6 # Horizontal FOV (Camera.angle_x in Blender)
+space: straight
 aperture: 2. # It is not used yet
-lookfrom: 0., 0., -6.
+lookfrom: 0., 0., -15.
 lookat: 0., 0., 0.
 upvector: 0., 1., 0.
 
@@ -25,6 +25,6 @@ background_color: 0.0
 debug: True
 
 # Scene
-light1_pos: 0., 0., -6
-light2_pos: 4., 4., -4
-
+light1_pos: 97., 106., -39
+light2_pos: -23., 106., -108.
+light3_pos: -23., 106., 101.

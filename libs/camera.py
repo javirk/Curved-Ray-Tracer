@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 
 class Camera:
-    def __init__(self, config, device='cpu', lookfrom=None):
+    def __init__(self, config, r0, device='cpu', lookfrom=None):
         if lookfrom is None:
             lookfrom = torch.tensor(eval(config['lookfrom']))
         lookfrom = lookfrom.float()
@@ -16,12 +16,12 @@ class Camera:
         vup = torch.tensor(eval(config['upvector']))
 
         aspect_ratio = u.convert_to_float(config['aspect_ratio'])
-        theta = u.degrees_to_radians(config['fov'])
-        h = tan(theta / 2)
-        viewport_height = 2.0 * h
-        viewport_width = aspect_ratio * viewport_height
+        theta = u.degrees_to_radians(config['hfov'])
+        w = tan(theta / 2)
+        viewport_width = 2.0 * w # * config['focal']
+        viewport_height = aspect_ratio * viewport_width
 
-        w = u.unit_vector(lookfrom - lookat, dim=0)
+        w = u.unit_vector(lookfrom - lookat, dim=0) # This is a different w. The other one is not used anymore
         s = u.unit_vector(torch.cross(vup, w), dim=0)
         v = torch.cross(w, s)
 
@@ -38,7 +38,8 @@ class Camera:
         self.timestep = config['initial_timestep']
         self.dt_matrix = None
 
-        self.f = u.f_schwarzschild if config['space'] == 'schwarzschild' else u.f_straight
+        self.force = u.Force(r0, config['space'])
+
         self.background_color = config['background_color']
         self.antialiasing = config['antialiasing']
         self.evolution = u.verlet if config['evolution_method'] == 'verlet' else u.runge_kutta
@@ -82,7 +83,7 @@ class Camera:
         return Image.from_flat(total_colors, total_alpha, self.image_width, self.image_height, use_alpha=use_alpha)
 
     def step(self, r, world, color, alpha):
-        r.pos, r.vel = self.evolution(r.pos, r.vel, self.f, self.dt_matrix)
+        r.pos, r.vel = self.evolution(r.pos, r.vel, self.force, self.dt_matrix)
 
         distances, nearest_distance = world.hit(r)
 
@@ -90,6 +91,7 @@ class Camera:
             r, color_obj, intersections = obj.hit(r, distances[i], color, world)
             color = torch.where(intersections, color_obj + color, color)
             alpha = torch.logical_or(intersections, alpha)
+            # depth = torch.where(intersections, depth - 1, depth)
 
         self.dt_matrix = u.update_timestep(nearest_distance)
         return r, color, alpha

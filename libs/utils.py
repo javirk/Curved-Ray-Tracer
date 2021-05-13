@@ -138,14 +138,32 @@ def verlet(r, v, f, dt=0.1):
     return r1, v1
 
 
-def f_schwarzschild(r, v):
-    c = torch.cross(r, v)
-    h2 = dot(c, c)
-    return -1.5 * h2 * r / torch.pow(dot(r, r), 2.5)
+# def f_schwarzschild(r, v, r0):
+#     r = r - r0
+#     c = torch.cross(r, v)
+#     h2 = dot(c, c)
+#     return -1.5 * h2 * r / torch.pow(dot(r, r), 2.5)
+#
+#
+# def f_straight(r, v):
+#     return 0
 
+class Force:
+    def __init__(self, r0, space):
+        self.r0 = r0
+        self.f = self.f_schwarzschild if space == 'schwarzschild' else self.f_straight
 
-def f_straight(r, v):
-    return 0
+    def __call__(self, r, v):
+        return self.f(r, v)
+
+    def f_schwarzschild(self, r, v):
+        r = r - self.r0
+        c = torch.cross(r, v)
+        h2 = dot(c, c)
+        return -1.5 * h2 * r / torch.pow(dot(r, r), 2.5)
+
+    def f_straight(self, r, v):
+        return 0
 
 
 def update_timestep(distances, mindis=1.5, maxdis=3, mindt=0.0001, maxdt=1):

@@ -19,9 +19,10 @@ class Material:
         else:
             raise ValueError(self.material + ' unknown material')
 
+
     def scatter_lambertian(self, r_in, normal):
         scatter_direction = normal + random_on_unit_sphere_like(r_in.vel, device=r_in.dev) #+ r_in.vel # This is actually a velocity
-        scatter_pos = r_in.pos + normal * 1e-2 # Normal goes outward, this is to prevent the next step to hit the sphere again
+        scatter_pos = r_in.pos + normal * 1e-4 # Normal goes outward, this is to prevent the next step to hit the sphere again
         return scatter_pos, scatter_direction
 
     def scatter_metal(self, r_in, normal):
