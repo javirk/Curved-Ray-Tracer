@@ -46,6 +46,7 @@ class Camera:
         self.debug = config['debug']
         
         self.device = device
+        self.matrix_world = u.get_transform_matrix(lookfrom.cpu().numpy(), lookat.cpu().numpy(), vup.cpu().numpy())
 
     def timestep_init(self, size):
         self.dt_matrix = torch.full(size, self.timestep, device=self.device)

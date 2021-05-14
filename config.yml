@@ -2,12 +2,12 @@
 theta: 45, 90 # initial_theta, final_theta
 phi: 45, 135
 total_points: 144
-r: 6
-run_folder: runs/test1/
+r: 15
+run_folder: runs/straight/
 epsilon: 1e-5
 
 # Camera
-image_width: 200
+image_width: 400
 aspect_ratio: 1
 hfov: 39.6 # Horizontal FOV (Camera.angle_x in Blender)
 space: straight
@@ -15,14 +15,16 @@ aperture: 2. # It is not used yet
 lookfrom: 0., 0., -15.
 lookat: 0., 0., 0.
 upvector: 0., 1., 0.
+trajectory: random # circular or random
 
 # Rendering
-antialiasing: 1
+antialiasing: 2
 evolution_method: verlet
 steps: 50000 # 50000 works
 initial_timestep: 0.1
 background_color: 0.0
 debug: True
+overwrite: False
 
 # Scene
 light1_pos: 97., 106., -39

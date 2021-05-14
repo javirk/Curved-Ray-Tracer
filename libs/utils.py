@@ -29,6 +29,10 @@ def unit_vector(a, dim=None):
     return a / a.norm(dim=dim).unsqueeze(-1)
 
 
+def unit_vector_np(a, axis=None):
+    return a / np.linalg.norm(a, axis=axis)[..., np.newaxis]
+
+
 def degrees_to_radians(d):
     if type(d) == str:
         d = eval(d)
@@ -193,12 +197,13 @@ def get_cam_trajectory(config):
     return x, y, z
 
 
-def prepare_dirs(f):
+def prepare_dirs(f, camera_angle=None):
     os.makedirs(f, exist_ok=True)
     os.makedirs(f + '/imgs', exist_ok=True)
     json_dir = f + '/poses.json'
     if not os.path.exists(json_dir):
-        data = {'frames': []}
+        assert camera_angle is not None
+        data = {'frames': [], 'camera_angle_x': degrees_to_radians(camera_angle)}
         with open(json_dir, "w") as file:
             json.dump(data, file)
     return json_dir
@@ -219,13 +224,15 @@ def read_previous_json(src):
         data = None
     return data
 
+
 def get_previous_poses(data):
     if len(data['frames']) == 0:
         return None
     p = []
     for f in data['frames']:
-        p.append(f['cam_pos'])
+        p.append(f['transform_matrix'])
     return torch.tensor(p)
+
 
 def update_json(src, update_data):
     with open(src, "r") as file:
@@ -233,3 +240,39 @@ def update_json(src, update_data):
     data['frames'].append(update_data)
     with open(src, "w") as file:
         json.dump(data, file)
+
+
+def get_transform_matrix(eye, center, up, final_r=4):
+    '''
+    This returns the cam to world matrix in blender coordinates.
+    :param eye:
+    :param center:
+    :param up:
+    :param final_r:
+    :return:
+    '''
+    # Renormalizing the camera position first
+    eye = np.array(eye)
+    r = np.linalg.norm(eye, axis=-1)
+    eye = eye / r * final_r
+
+    zaxis = unit_vector_np(eye - center)
+    xaxis = unit_vector_np(np.cross(up, zaxis))
+    yaxis = np.cross(zaxis, xaxis)
+
+    transform_matrix = np.eye(4)
+    transform_matrix[:-1, 0] = xaxis
+    transform_matrix[:-1, 1] = yaxis
+    transform_matrix[:-1, 2] = zaxis
+    transform_matrix[:-1, 3] = eye
+    return transform_matrix
+
+
+def listify_matrix(matrix):
+    matrix_list = []
+    for row in matrix:
+        matrix_list.append(list(row))
+    return matrix_list
+
+def str2bool(v):
+  return v.lower() in ("yes", "true", "t", "1")
